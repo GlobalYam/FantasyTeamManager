@@ -1,4 +1,4 @@
-# FantasyManager
+# FantasyTeamManager
 Fantasy Team manager
 
 Sovelluksen avulla käyttäjä voi koota tiimin fiktiivisiä pelaajia ja toimia niiden managerina, sekä katsoa eri tiimien pelihistoriaa.
