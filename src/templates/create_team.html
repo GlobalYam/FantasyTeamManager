@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Your Team</title>
+</head>
+
+<body>
+    <h1>Create Your Team</h1>
+    <form action="/create_team" method="POST">
+        <p>Team Name:<br>
+            <input type="text" name="team_name" required>
+        </p>
+        <p>Location:<br>
+            <input type="text" name="location" required>
+        </p>
+        <h2>Select Players</h2>
+
+        <p>Batter:<br>
+            <select name="batter_id" required>
+                {% for player in players %}
+                <option value="{{ player.id }}">{{ player.name }}</option>
+                {% endfor %}
+            </select>
+        </p>
+
+        <p>Pitcher:<br>
+            <select name="pitcher_id" required>
+                {% for player in players %}
+                <option value="{{ player.id }}">{{ player.name }}</option>
+                {% endfor %}
+            </select>
+        </p>
+
+        <p>Fielder:<br>
+            <select name="fielder_id" required>
+                {% for player in players %}
+                <option value="{{ player.id }}">{{ player.name }}</option>
+                {% endfor %}
+            </select>
+        </p>
+
+        <input type="submit" value="Create Team">
+    </form>
+</body>
+
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Your Team</title>
+</head>
+
+<body>
+    <h1>Choose Your Team</h1>
+
+    {% if teams %}
+    <form action="/choose_team" method="POST">
+        <label for="team">Select your team:</label>
+        <select name="team_id" id="team">
+            {% for team in teams %}
+            <option value="{{ team.id }}">{{ team.name }} - {{ team.location }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Select Team">
+    </form>
+
+    {% else %}
+    <p>No teams are currently available.</p>
+    {% endif %}
+    <h2>Create a New Team</h2>
+    <form action="/create_team" method="GET">
+        <input type="submit" value="Create Team">
+    </form>
+</body>
+
+</html>

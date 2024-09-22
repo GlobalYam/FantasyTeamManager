@@ -17,3 +17,31 @@ Sovelluksen inspiraationa toimii siis perinteisen fantasia-urheilun konsepti.
 - Ylläpitäjä voi luoda uusia pelaajia
 - Ylläpitäjä voi poistaa pelaajia käytöstä ja palauttaa niitä käyttöön (vastaten eläkettä pelaajille)
 - Ylläpitäjä voi tarkastella tilastoja kaikkien tiimien suorituksista
+
+## Ohjelman testaaminen:
+Ohjelman testaaminen on tällä hetkellä työn alla mutta ohjelmaa tulee olla mahdollista testata tuotannossa 
+
+Fly.io linkki: https://fantasy-team-manager.fly.dev/
+
+Ohjelmaa pystyy myös testata lokaalisti 
+
+navigoi src kansioon ja suorita seuraavat komennot:
+```bash
+python3 -m venv venv
+```
+
+```bash
+source venv/bin/activate
+```
+
+```bash
+pip install -r requirements.txt
+```
+
+```bash
+psql -d postgres -f schema.sql
+```
+
+```bash
+flask run
+```
