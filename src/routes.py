@@ -2,10 +2,12 @@ from os import getenv
 from app import app
 from flask import Flask
 from flask import redirect, render_template, request, session, flash
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash, generate_password_hash
-from db import db
+from database_handler import (
+    get_user_by_username,
+    create_user,
+    check_if_username_exists,
+)  # Assuming helper functions are in a file named db_helpers.py
 
 
 @app.route("/")
@@ -17,23 +19,24 @@ def index():
 def login():
     username = request.form["username"]
     password = request.form["password"]
-    # check username and password
-    sql = text("SELECT id, password FROM users WHERE username=:username")
-    result = db.session.execute(sql, {"username": username})
-    user = result.fetchone()
+
+    # Call the helper function to get the user data
+    user = get_user_by_username(username)
+
     if not user:
-        # invalid username
+        # Invalid username
         flash("Invalid username.")
         return redirect("/")
     else:
+        # Verify the password
         hash_value = user.password
         if check_password_hash(hash_value, password):
-            # correct username and password
+            # Correct username and password
             session["username"] = username
             flash("Login successful.")
             return redirect("/")
         else:
-            # invalid password
+            # Invalid password
             flash("Invalid password.")
             return redirect("/")
 
@@ -49,20 +52,14 @@ def register():
             flash("Username and password are required.")
             return redirect("/register")
 
-        # Check if the username already exists
-        sql = text("SELECT id FROM users WHERE username=:username")
-        result = db.session.execute(sql, {"username": username})
-        if result.fetchone():
+        # Call the helper function to check if the username already exists
+        if check_if_username_exists(username):
             flash("Username already taken.")
             return redirect("/register")
 
-        # Hash the password and insert the new user into the database
+        # Hash the password and call the helper function to create the user
         hash_value = generate_password_hash(password)
-        sql = text(
-            "INSERT INTO users (username, password) VALUES (:username, :password)"
-        )
-        db.session.execute(sql, {"username": username, "password": hash_value})
-        db.session.commit()
+        create_user(username, hash_value)
 
         # Automatically log in the user after registration
         session["username"] = username
