@@ -20,10 +20,17 @@ Sovelluksen inspiraationa toimii siis perinteisen fantasia-urheilun konsepti.
 
 ## Ohjelman testaaminen:
 Ohjelman testaaminen on tällä hetkellä työn alla mutta ohjelmaa tulee olla mahdollista testata tuotannossa 
+Ohejlman testaaminen tuotannossa on keskeneräinen.
 
 Fly.io linkki: https://fantasy-team-manager.fly.dev/
 
 Ohjelmaa pystyy myös testata lokaalisti 
+
+Ensin luo .env tiedosto, joka sisältää 
+```
+DATABASE_URL=postgresql:///postgres
+SECRET_KEY=secret
+```
 
 navigoi src kansioon ja suorita seuraavat komennot:
 ```bash
