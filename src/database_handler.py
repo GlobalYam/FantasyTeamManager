@@ -76,3 +76,111 @@ def get_all_players():
     players_sql = text("SELECT id, name FROM players")
     players_result = db.session.execute(players_sql)
     return players_result.fetchall()
+
+
+def get_batter_by_team_id(team_id):
+    """
+    Fetch the batter of a given team by team ID.
+    """
+    # First, check if the team exists and has a batter set
+    team_sql = text(
+        """
+        SELECT batter FROM teams WHERE id = :team_id
+        """
+    )
+    team_result = db.session.execute(team_sql, {"team_id": team_id}).fetchone()
+
+    if not team_result or team_result.batter == 0:
+        # If no team or no batter is set, return None
+        print(f"Team {team_id} either does not exist or has no batter set.")
+        return None
+
+    # Query to get the batter's details from the players table
+    player_sql = text(
+        """
+        SELECT id, name 
+        FROM players
+        WHERE id = :batter_id
+        """
+    )
+
+    # Fetch the batter's details
+    player_result = db.session.execute(
+        player_sql, {"batter_id": team_result.batter}
+    ).fetchone()
+
+    if not player_result:
+        print(f"No player found with id {team_result.batter}.")
+    return player_result
+
+
+def get_pitcher_by_team_id(team_id):
+    """
+    Fetch the pitcher of a given team by team ID.
+    """
+    # First, check if the team exists and has a pitcher set
+    team_sql = text(
+        """
+        SELECT pitcher FROM teams WHERE id = :team_id
+        """
+    )
+    team_result = db.session.execute(team_sql, {"team_id": team_id}).fetchone()
+
+    if not team_result or team_result.pitcher == 0:
+        # If no team or no pitcher is set, return None
+        print(f"Team {team_id} either does not exist or has no pitcher set.")
+        return None
+
+    # Query to get the pitcher's details from the players table
+    player_sql = text(
+        """
+        SELECT id, name 
+        FROM players
+        WHERE id = :pitcher_id
+        """
+    )
+
+    # Fetch the pitcher's details
+    player_result = db.session.execute(
+        player_sql, {"pitcher_id": team_result.pitcher}
+    ).fetchone()
+
+    if not player_result:
+        print(f"No player found with id {team_result.pitcher}.")
+    return player_result
+
+
+def get_fielder_by_team_id(team_id):
+    """
+    Fetch the fielder of a given team by team ID.
+    """
+    # First, check if the team exists and has a fielder set
+    team_sql = text(
+        """
+        SELECT catcher FROM teams WHERE id = :team_id
+        """
+    )
+    team_result = db.session.execute(team_sql, {"team_id": team_id}).fetchone()
+
+    if not team_result or team_result.catcher == 0:
+        # If no team or no fielder is set, return None
+        print(f"Team {team_id} either does not exist or has no fielder set.")
+        return None
+
+    # Query to get the fielder's details from the players table
+    player_sql = text(
+        """
+        SELECT id, name 
+        FROM players
+        WHERE id = :fielder_id
+        """
+    )
+
+    # Fetch the fielder's details
+    player_result = db.session.execute(
+        player_sql, {"fielder_id": team_result.catcher}
+    ).fetchone()
+
+    if not player_result:
+        print(f"No player found with id {team_result.catcher}.")
+    return player_result

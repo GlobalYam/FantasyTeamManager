@@ -12,6 +12,9 @@ from database_handler import (
     set_user_team,
     create_new_team,
     get_all_players,
+    get_batter_by_team_id,
+    get_pitcher_by_team_id,
+    get_fielder_by_team_id,
 )
 
 
@@ -26,7 +29,19 @@ def index():
 
     # Get the user's current team
     current_team = get_team_by_user_id(user.id)
+    if current_team:
+        current_batter = get_batter_by_team_id(current_team.id)
+        current_pitcher = get_pitcher_by_team_id(current_team.id)
+        current_fielder = get_fielder_by_team_id(current_team.id)
 
+        # Pass the current team and players to the template
+        return render_template(
+            "index.html",
+            current_team=current_team,
+            current_batter=current_batter,
+            current_pitcher=current_pitcher,
+            current_fielder=current_fielder,
+        )
     return render_template("index.html", current_team=current_team)
 
 

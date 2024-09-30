@@ -3,6 +3,10 @@
 
 {% if current_team %}
 <p>Your Current Team: {{ current_team.name }} (Location: {{ current_team.location }})</p>
+<p>Team info here:</p>
+<p>Batter: {{ current_batter.name }}</p>
+<p>Pitcher: {{ current_pitcher.name }}</p>
+<p>Fielder: {{ current_fielder.name }}</p>
 <p>Want to switch teams? <a href="/choose_team">Choose a team</a></p>
 <p>Want join a match? Coming soon</p>
 {% else %}
