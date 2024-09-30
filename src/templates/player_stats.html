@@ -1,0 +1,30 @@
+<!-- player_stats.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ player.name }}'s Stats</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"> <!-- Optional CSS -->
+</head>
+
+<body>
+    <header>
+        <h1>Statistics for {{ player.name }}</h1>
+    </header>
+
+    <ul>
+        <li>Power: {{ player.power }}</li>
+        <li>Accuracy: {{ player.accuracy }}</li>
+        <li>Speed: {{ player.speed }}</li>
+        <li>Hit Average: {{ player.hit_average }}</li>
+        <li>Strikeout Average: {{ player.strikeout_average }}</li>
+        <li>Out Average: {{ player.out_average }}</li>
+    </ul>
+
+    <!-- Link back to the index page -->
+    <a href="{{ url_for('index') }}">Back to Team</a>
+</body>
+
+</html>

@@ -41,6 +41,38 @@ def get_all_teams():
     return result.fetchall()
 
 
+def get_player_by_id(player_id):
+    """
+    Fetch player statistics by player ID.
+    """
+    sql = text(
+        """
+        SELECT 
+            id, name, power, accuracy, speed, 
+            hit_average, strikeout_average, out_average, 
+            mvps, games, wins, losses, games_tied 
+        FROM players
+        WHERE id = :player_id
+        """
+    )
+    return db.session.execute(sql, {"player_id": player_id}).fetchone()
+
+
+def get_all_players_by_team_id(team_id):
+    """
+    Fetch all players belonging to a specific team by team ID.
+    """
+    sql = text(
+        """
+        SELECT players.id, players.name 
+        FROM players
+        JOIN teams ON teams.batter = players.id OR teams.pitcher = players.id OR teams.catcher = players.id
+        WHERE teams.id = :team_id
+        """
+    )
+    return db.session.execute(sql, {"team_id": team_id}).fetchall()
+
+
 # Set the user's current team
 def set_user_team(username, team_id):
     sql = text("UPDATE users SET current_team=:team_id WHERE username=:username")

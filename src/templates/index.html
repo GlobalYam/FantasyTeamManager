@@ -4,9 +4,31 @@
 {% if current_team %}
 <p>Your Current Team: {{ current_team.name }} (Location: {{ current_team.location }})</p>
 <p>Team info here:</p>
-<p>Batter: {{ current_batter.name }}</p>
-<p>Pitcher: {{ current_pitcher.name }}</p>
-<p>Fielder: {{ current_fielder.name }}</p>
+
+<p>Batter:
+    {% if current_batter %}
+    <a href="{{ url_for('player_stats', player_id=current_batter.id) }}">{{ current_batter.name }}</a>
+    {% else %}
+    None
+    {% endif %}
+</p>
+
+<p>Pitcher:
+    {% if current_pitcher %}
+    <a href="{{ url_for('player_stats', player_id=current_pitcher.id) }}">{{ current_pitcher.name }}</a>
+    {% else %}
+    None
+    {% endif %}
+</p>
+
+<p>Fielder:
+    {% if current_fielder %}
+    <a href="{{ url_for('player_stats', player_id=current_fielder.id) }}">{{ current_fielder.name }}</a>
+    {% else %}
+    None
+    {% endif %}
+</p>
+
 <p>Want to switch teams? <a href="/choose_team">Choose a team</a></p>
 <p>Want join a match? Coming soon</p>
 {% else %}

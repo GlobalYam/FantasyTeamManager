@@ -15,6 +15,8 @@ from database_handler import (
     get_batter_by_team_id,
     get_pitcher_by_team_id,
     get_fielder_by_team_id,
+    get_player_by_id,
+    get_all_players_by_team_id,
 )
 
 
@@ -173,3 +175,20 @@ def create_team():
 
         flash("Team created successfully!")
         return redirect("/choose_team")
+
+
+@app.route("/player/<int:player_id>")
+def player_stats(player_id):
+    """
+    View the statistics of a player by their player ID.
+    """
+    player = get_player_by_id(player_id)
+
+    if player is None:
+        return (
+            "Player not found",
+            404,
+        )  # Handle the case where the player does not exist
+
+    # Render the player stats template
+    return render_template("player_stats.html", player=player)
