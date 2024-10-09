@@ -35,8 +35,20 @@
 </p>
 
 
-<p>Want join a match? Coming soon</p>
 
+<p>Challenge another team:</p>
+<ul>
+    {% for user in other_users %}
+    <li>
+        {{ user.username }} - {{ user.current_team if user.current_team else 'No team' }}
+        <form action="{{ url_for('challenge_team') }}" method="POST" style="display:inline;"
+            onsubmit="console.log(this.team_id.value)">
+            <input type="hidden" name="team_id" value="{{ user.current_team }}">
+            <button type="submit">Challenge</button>
+        </form>
+    </li>
+    {% endfor %}
+</ul>
 
 {% else %}
 <p>You don't have a team yet. <a href="/choose_team">Choose a team</a></p>

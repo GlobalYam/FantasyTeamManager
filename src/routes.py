@@ -18,6 +18,8 @@ from database_handler import (
     get_player_by_id,
     get_all_players_by_team_id,
     get_team_stats_by_team_id,
+    get_all_other_users,
+    get_team_name_by_id,
 )
 
 
@@ -43,6 +45,10 @@ def index():
         losses = team_stats["losses"]
         ties = team_stats["ties"]
 
+        # Fetch other users and their teams
+        other_users = get_all_other_users(user.id)
+        print(other_users)
+
         # Pass the current team and players to the template
         return render_template(
             "index.html",
@@ -53,8 +59,55 @@ def index():
             wins=wins,
             losses=losses,
             ties=ties,
+            other_users=other_users,
         )
-    return render_template("index.html", current_team=current_team)
+    return render_template("index.html")
+
+
+@app.route("/challenge_team", methods=["POST"])
+def challenge_team():
+    if "username" not in session:
+        return redirect("/")
+
+    # Get the current user
+    username = session["username"]
+    user = get_user_by_username(username)
+
+    # Get the team to challenge
+    print(request.form)
+    challenged_team_id = request.form.get("team_id")
+    if not challenged_team_id:
+        flash("No team selected for challenge.")
+        return redirect("/")
+
+    # Fetch the user's team
+    user_team = get_team_by_user_id(user.id)[0]
+    user_players = get_all_players_by_team_id(user_team)
+
+    # Fetch the challenged team
+    challenged_team = get_team_name_by_id(challenged_team_id)
+    challenged_players = get_all_players_by_team_id(challenged_team_id)
+
+    return render_template(
+        "match.html",
+        user_team=user_team,
+        challenged_team=challenged_team,
+        challenged_team_id=challenged_team_id,
+        user_players=user_players,
+        challenged_players=challenged_players,
+    )
+
+
+@app.route("/start_match", methods=["POST"])
+def start_match():
+    if "username" not in session:
+        return redirect("/")
+
+    # Logic to start the match
+    challenged_team_id = request.form.get("challenged_team_id")
+    flash(f"Match started with team ID {challenged_team_id}!")
+
+    return redirect("/")
 
 
 @app.route("/login", methods=["POST"])

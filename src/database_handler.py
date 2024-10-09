@@ -20,6 +20,14 @@ def check_if_username_exists(username):
     return result.fetchone()
 
 
+def get_team_name_by_id(team_id):
+    sql = text("SELECT name FROM teams WHERE id = :team_id")
+    result = db.session.execute(sql, {"team_id": team_id}).fetchone()
+    if result:
+        return result.name
+    return None
+
+
 def get_team_by_user_id(user_id):
     # get the team of the user based on current_team in users table
     sql = text(
@@ -198,6 +206,31 @@ def get_team_stats_by_team_id(team_id):
     if result:
         return {"wins": result.wins, "losses": result.losses, "ties": result.ties}
     return {"wins": 0, "losses": 0, "ties": 0}
+
+
+def get_all_other_users(exclude_user_id):
+    """
+    Fetch all other users, returning their ID, name, and current team ID.
+    """
+    sql = text(
+        """
+        SELECT 
+            users.id AS user_id, 
+            users.username, 
+            users.current_team
+        FROM users
+        WHERE users.id != :exclude_user_id
+        """
+    )
+    result = db.session.execute(sql, {"exclude_user_id": exclude_user_id}).fetchall()
+    return [
+        {
+            "user_id": row.user_id,
+            "username": row.username,
+            "current_team": row.current_team,
+        }
+        for row in result
+    ]
 
 
 def get_fielder_by_team_id(team_id):

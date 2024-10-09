@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match</title>
+    <style>
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .team {
+            width: 40%;
+        }
+
+        .start-match {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="team">
+            <h2>Your Team</h2>
+            {% if user_players %}
+            <ul>
+                {% for player in user_players %}
+                <li>{{ player.name }}</li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>No players in your team.</p>
+            {% endif %}
+        </div>
+        <div class="start-match">
+            <form action="{{ url_for('start_match') }}" method="POST">
+                <input type="hidden" name="challenged_team_id" value="{{ challenged_team_id }}">
+                <button type="submit">Start Match</button>
+            </form>
+        </div>
+        <div class="team">
+            <h2>Challenged Team</h2>
+            {% if challenged_players %}
+            <ul>
+                {% for player in challenged_players %}
+                <li>{{ player.name }}</li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>No players in the challenged team.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+
+</html>

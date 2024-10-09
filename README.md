@@ -19,12 +19,11 @@ Sovelluksen inspiraationa toimii siis perinteisen fantasia-urheilun konsepti.
 - Ylläpitäjä voi tarkastella tilastoja kaikkien tiimien suorituksista
 
 ## Ohjelman testaaminen:
-Ohjelman testaaminen on tällä hetkellä työn alla mutta ohjelmaa tulee olla mahdollista testata tuotannossa 
-Ohejlman testaaminen tuotannossa on keskeneräinen.
+Ohejlman testaaminen tuotannossa on keskeneräinen, ja erittäin jäljessä.
 
 Fly.io linkki: https://fantasy-team-manager.fly.dev/
 
-Ohjelmaa pystyy myös testata lokaalisti 
+Ohjelmaa pystyy testata lokaalisti:
 
 Ensin luo .env tiedosto, joka sisältää 
 ```
