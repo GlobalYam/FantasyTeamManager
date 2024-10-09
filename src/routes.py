@@ -17,6 +17,7 @@ from database_handler import (
     get_fielder_by_team_id,
     get_player_by_id,
     get_all_players_by_team_id,
+    get_team_stats_by_team_id,
 )
 
 
@@ -36,6 +37,12 @@ def index():
         current_pitcher = get_pitcher_by_team_id(current_team.id)
         current_fielder = get_fielder_by_team_id(current_team.id)
 
+        # Fetch team stats
+        team_stats = get_team_stats_by_team_id(current_team.id)
+        wins = team_stats["wins"]
+        losses = team_stats["losses"]
+        ties = team_stats["ties"]
+
         # Pass the current team and players to the template
         return render_template(
             "index.html",
@@ -43,6 +50,9 @@ def index():
             current_batter=current_batter,
             current_pitcher=current_pitcher,
             current_fielder=current_fielder,
+            wins=wins,
+            losses=losses,
+            ties=ties,
         )
     return render_template("index.html", current_team=current_team)
 

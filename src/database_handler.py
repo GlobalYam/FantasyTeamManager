@@ -182,6 +182,24 @@ def get_pitcher_by_team_id(team_id):
     return player_result
 
 
+def get_team_stats_by_team_id(team_id):
+    """
+    Fetch team statistics by team ID.
+    """
+    sql = text(
+        """
+        SELECT 
+            wins, losses, games_tied AS ties
+        FROM teams
+        WHERE id = :team_id
+        """
+    )
+    result = db.session.execute(sql, {"team_id": team_id}).fetchone()
+    if result:
+        return {"wins": result.wins, "losses": result.losses, "ties": result.ties}
+    return {"wins": 0, "losses": 0, "ties": 0}
+
+
 def get_fielder_by_team_id(team_id):
     """
     Fetch the fielder of a given team by team ID.

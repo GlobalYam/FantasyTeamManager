@@ -3,7 +3,12 @@
 
 {% if current_team %}
 <p>Your Current Team: {{ current_team.name }} (Location: {{ current_team.location }})</p>
+<p>Want to switch teams? <a href="/choose_team">Choose a team</a></p>
+
 <p>Team info here:</p>
+<p>Wins: <span id="wins">{{ wins }}</span></p>
+<p>Losses: <span id="losses">{{ losses }}</span></p>
+<p>Ties: <span id="ties">{{ ties }}</span></p>
 
 <p>Batter:
     {% if current_batter %}
@@ -29,8 +34,10 @@
     {% endif %}
 </p>
 
-<p>Want to switch teams? <a href="/choose_team">Choose a team</a></p>
+
 <p>Want join a match? Coming soon</p>
+
+
 {% else %}
 <p>You don't have a team yet. <a href="/choose_team">Choose a team</a></p>
 {% endif %}
