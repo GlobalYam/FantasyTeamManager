@@ -40,7 +40,7 @@
 <ul>
     {% for user in other_users %}
     <li>
-        {{ user.username }} - {{ user.current_team if user.current_team else 'No team' }}
+        {{ user.username }} - {{ user.team_name if user.team_name else 'No team' }}
         <form action="{{ url_for('challenge_team') }}" method="POST" style="display:inline;"
             onsubmit="console.log(this.team_id.value)">
             <input type="hidden" name="team_id" value="{{ user.current_team }}">

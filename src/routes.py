@@ -3,24 +3,8 @@ from app import app
 from flask import Flask
 from flask import redirect, render_template, request, session, flash
 from werkzeug.security import check_password_hash, generate_password_hash
-from database_handler import (
-    get_user_by_username,
-    create_user,
-    check_if_username_exists,
-    get_team_by_user_id,
-    get_all_teams,
-    set_user_team,
-    create_new_team,
-    get_all_players,
-    get_batter_by_team_id,
-    get_pitcher_by_team_id,
-    get_fielder_by_team_id,
-    get_player_by_id,
-    get_all_players_by_team_id,
-    get_team_stats_by_team_id,
-    get_all_other_users,
-    get_team_name_by_id,
-)
+from database_handler import *
+from match import *
 
 
 @app.route("/")
@@ -103,9 +87,39 @@ def start_match():
     if "username" not in session:
         return redirect("/")
 
-    # Logic to start the match
+    # Logic to get team players
     challenged_team_id = request.form.get("challenged_team_id")
-    flash(f"Match started with team ID {challenged_team_id}!")
+    challenged_team_name = get_team_name_by_id(challenged_team_id)
+    challenged_players = get_all_players_by_team_id(challenged_team_id)
+
+    username = session["username"]
+    user = get_user_by_username(username)
+    user_team_id = get_team_by_user_id(user.id)[0]
+    user_players = get_all_players_by_team_id(user_team_id)
+    user_team_name = get_team_name_by_id(user_team_id)
+
+    # get players and stats:
+    user_players_stats = [get_player_by_id(player[0]) for player in user_players]
+    challenged_players_stats = [
+        get_player_by_id(player[0]) for player in challenged_players
+    ]
+
+    # resolve match
+    results = resolve_match(
+        home_team_players=user_players_stats,
+        home_team=user_team_name,
+        visiting_team_players=challenged_players_stats,
+        visiting_team=challenged_team_name,
+    )
+
+    # Create the match in the database
+    # create_match(user_team_id, challenged_team_id, results)
+
+    flash(
+        f"""Match results: 
+          Winner: {results["winner"]}!
+          {results["home_points"]} to {results["visiting_points"]}!"""
+    )
 
     return redirect("/")
 
@@ -173,6 +187,9 @@ def logout():
 
 @app.route("/choose_team", methods=["GET", "POST"])
 def choose_team():
+    if "username" not in session:
+        return redirect("/")
+
     if request.method == "POST":
         # Save the selected team to the user's profile
         if "username" not in session:
@@ -197,7 +214,9 @@ def choose_team():
         return redirect("/")
 
     # GET request: Show the team selection form
-    teams = get_all_teams()
+    username = session["username"]
+    user_id = get_user_by_username(username).id
+    teams = get_all_teams_owned_by_user_id(user_id)
     return render_template("choose_team.html", teams=teams)
 
 
@@ -210,7 +229,7 @@ def create_team():
 
     if request.method == "GET":
         # Render the form to create a new team
-        players = get_all_players()
+        players = get_all_free_players()
         return render_template("create_team.html", players=players)
 
     if request.method == "POST":
@@ -229,6 +248,11 @@ def create_team():
             or not fielder_id
         ):
             flash("All fields are required.")
+            return redirect("/choose_team")
+
+        # Check if any player is selected for more than one role
+        if len({batter_id, pitcher_id, fielder_id}) < 3:
+            flash("A player cannot be assigned to more than one role.")
             return redirect("/choose_team")
 
         # Create the team in the database

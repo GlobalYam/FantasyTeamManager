@@ -49,6 +49,20 @@ def get_all_teams():
     return result.fetchall()
 
 
+def get_all_teams_owned_by_user_id(user_id):
+    """
+    Fetch all teams owned by a specific user by user ID.
+    """
+    sql = text(
+        """
+        SELECT id, name, location 
+        FROM teams 
+        WHERE owner = :user_id
+        """
+    )
+    return db.session.execute(sql, {"user_id": user_id}).fetchall()
+
+
 def get_player_by_id(player_id):
     """
     Fetch player statistics by player ID.
@@ -56,7 +70,7 @@ def get_player_by_id(player_id):
     sql = text(
         """
         SELECT 
-            id, name, power, accuracy, speed, 
+            id, name, power, accuracy, speed, volatility, luck,
             hit_average, strikeout_average, out_average, 
             mvps, games, wins, losses, games_tied 
         FROM players
@@ -114,6 +128,15 @@ def create_new_team(name, location, batter_id, pitcher_id, fielder_id, username)
 def get_all_players():
     # Get all players, pretty self explanatory
     players_sql = text("SELECT id, name FROM players")
+    players_result = db.session.execute(players_sql)
+    return players_result.fetchall()
+
+
+def get_all_free_players():
+    # Get all players not in teams
+    players_sql = text(
+        "SELECT id, name FROM players WHERE id NOT IN (SELECT batter FROM teams) AND id NOT IN (SELECT pitcher FROM teams) AND id NOT IN (SELECT catcher FROM teams)"
+    )
     players_result = db.session.execute(players_sql)
     return players_result.fetchall()
 
@@ -210,15 +233,17 @@ def get_team_stats_by_team_id(team_id):
 
 def get_all_other_users(exclude_user_id):
     """
-    Fetch all other users, returning their ID, name, and current team ID.
+    Fetch all other users, returning their ID, name, and current team ID and name.
     """
     sql = text(
         """
         SELECT 
             users.id AS user_id, 
             users.username, 
-            users.current_team
+            users.current_team,
+            teams.name AS team_name
         FROM users
+        LEFT JOIN teams ON users.current_team = teams.id
         WHERE users.id != :exclude_user_id
         """
     )
@@ -228,6 +253,7 @@ def get_all_other_users(exclude_user_id):
             "user_id": row.user_id,
             "username": row.username,
             "current_team": row.current_team,
+            "team_name": row.team_name,
         }
         for row in result
     ]

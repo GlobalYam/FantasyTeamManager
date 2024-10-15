@@ -1,3 +1,9 @@
+-- Clear all Tables
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS players;
+DROP TABLE IF EXISTS teams;
+DROP TABLE IF EXISTS games;
+
 -- Users Table
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
@@ -22,6 +28,7 @@ CREATE TABLE players (
     accuracy INT DEFAULT 0,  -- "(hidden) used to calc strikeouts"
     speed INT DEFAULT 0,  -- "(hidden) used to calc outs"
     volatility INT DEFAULT 0,  -- "(hidden) adds randomness"
+    luck INT DEFAULT 0,  -- "(hidden) adds randomness"
 
     hit_average INT DEFAULT 0,  -- "average hits when batting"
     strikeout_average INT DEFAULT 0,  -- "average strikeouts when pitching"
@@ -83,14 +90,14 @@ CREATE TABLE games (
     winner INT DEFAULT 0 --REFERENCES teams(id)  -- "if the game is a tie, winner is NULL"
 );
 
-INSERT INTO players (name, power, accuracy, speed) VALUES
-    ('Player 1', FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11)),
-    ('Player 2', FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11)),
-    ('Player 3', FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11)),
-    ('Player 4', FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11)),
-    ('Player 5', FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11)),
-    ('Player 6', FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11)),
-    ('Player 7', FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11)),
-    ('Player 8', FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11)),
-    ('Player 9', FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11)),
-    ('Player 10', FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11));
+INSERT INTO players (name, power, accuracy, speed, volatility, luck) VALUES
+    ('Player 0', FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101)),
+    ('Player 1', FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101)),
+    ('Player 2', FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101)),
+    ('Player 3', FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101)),
+    ('Player 4', FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101)),
+    ('Player 5', FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101)),
+    ('Player 6', FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101)),
+    ('Player 7', FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101)),
+    ('Player 8', FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101)),
+    ('Player 9', FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 11), FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101));
