@@ -107,17 +107,19 @@ def start_match():
     # resolve match
     results = resolve_match(
         home_team_players=user_players_stats,
-        home_team=user_team_name,
+        home_team_name=user_team_name,
+        home_team_id=user_team_id,
         visiting_team_players=challenged_players_stats,
-        visiting_team=challenged_team_name,
+        visiting_team_name=challenged_team_name,
+        visiting_team_id=challenged_team_id,
     )
 
     # Create the match in the database
-    # create_match(user_team_id, challenged_team_id, results)
+    create_match(user_team_id, challenged_team_id, results)
 
     flash(
         f"""Match results: 
-          Winner: {results["winner"]}!
+          Winner: {get_team_name_by_id(results["winner"])}!
           {results["home_points"]} to {results["visiting_points"]}!"""
     )
 
@@ -277,5 +279,20 @@ def player_stats(player_id):
             404,
         )  # Handle the case where the player does not exist
 
+    batting_average = get_player_batting_stats(player_id)["batting_average"]
+    batting_average = round(batting_average, 3) if batting_average else None
+
+    pitching_average = get_player_pitching_stats(player_id)["pitching_average"]
+    pitching_average = round(pitching_average, 3) if pitching_average else None
+
+    fielding_average = get_player_fielding_stats(player_id)["fielding_average"]
+    fielding_average = round(fielding_average, 3) if fielding_average else None
+
     # Render the player stats template
-    return render_template("player_stats.html", player=player)
+    return render_template(
+        "player_stats.html",
+        player=player,
+        batting_average=batting_average,
+        pitching_average=pitching_average,
+        fielding_average=fielding_average,
+    )

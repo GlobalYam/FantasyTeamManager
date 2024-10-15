@@ -1,7 +1,14 @@
 import random
 
 
-def resolve_match(home_team_players, home_team, visiting_team_players, visiting_team):
+def resolve_match(
+    home_team_players,
+    home_team_name,
+    home_team_id,
+    visiting_team_players,
+    visiting_team_name,
+    visiting_team_id,
+):
     # returns the winning team and
 
     home_batter, home_pitcher, home_fielder = home_team_players
@@ -33,7 +40,7 @@ def resolve_match(home_team_players, home_team, visiting_team_players, visiting_
 
     # ROUNDS
     for round_num in range(1, 4):
-        home_team_result, home_team_runs = round(
+        home_team_result, home_team_runs = simulate_round(
             home_team_players, visiting_team_players
         )
         home_points += home_team_runs
@@ -53,7 +60,7 @@ def resolve_match(home_team_players, home_team, visiting_team_players, visiting_
                 visiting_outs += 1
 
     for round_num in range(1, 4):
-        visiting_team_result, visiting_team_runs = round(
+        visiting_team_result, visiting_team_runs = simulate_round(
             home_team_players, visiting_team_players
         )
         visiting_points += visiting_team_runs
@@ -73,9 +80,11 @@ def resolve_match(home_team_players, home_team, visiting_team_players, visiting_
                 home_outs += 1
 
     if home_points > visiting_points:
-        winner = home_team
+        winner = home_team_id
+    elif home_points < visiting_points:
+        winner = visiting_team_id
     else:
-        winner = visiting_team
+        winner = None
 
     match_results = {
         "home_hits": home_hits,
@@ -93,7 +102,7 @@ def resolve_match(home_team_players, home_team, visiting_team_players, visiting_
     return match_results
 
 
-def round(batting_team, fielding_team):
+def simulate_round(batting_team, fielding_team):
     # returns the result of a round as a tuple, (result, runs)
     batter = batting_team[0]
     pitcher = fielding_team[1]

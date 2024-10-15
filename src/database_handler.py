@@ -1,5 +1,6 @@
 from sqlalchemy.sql import text
 from db import db
+from datetime import datetime
 
 
 def get_user_by_username(username):
@@ -177,6 +178,76 @@ def get_batter_by_team_id(team_id):
     return player_result
 
 
+def get_player_batting_stats(player_id):
+    """
+    Fetch batting average of a player from games where they were the batter.
+    """
+    sql = text(
+        """
+        SELECT 
+            COUNT(*) AS games_played, 
+            SUM(home_points) + SUM(visiting_points) AS total_runs, 
+            SUM(home_hits) + SUM(visiting_hits) AS total_hits, 
+            SUM(home_outs) + SUM(visiting_outs) AS total_outs
+        FROM games
+        WHERE home_batter = :player_id OR visiting_batter = :player_id
+        """
+    )
+    result = db.session.execute(sql, {"player_id": player_id}).fetchone()
+    if result.games_played == 0:
+        return {"batting_average": 0}
+    return {
+        "batting_average": result.total_hits / (result.total_hits + result.total_outs)
+    }
+
+
+def get_player_pitching_stats(player_id):
+    """
+    Fetch pitching average of a player from games where they were the pitcher.
+    """
+    sql = text(
+        """
+        SELECT 
+            COUNT(*) AS games_played, 
+            SUM(home_points) + SUM(visiting_points) AS total_runs, 
+            SUM(home_hits) + SUM(visiting_hits) AS total_hits, 
+            SUM(home_strikeouts) + SUM(visiting_strikeouts) AS total_strikeouts
+        FROM games
+        WHERE home_pitcher = :player_id OR visiting_pitcher = :player_id
+        """
+    )
+    result = db.session.execute(sql, {"player_id": player_id}).fetchone()
+    if result.games_played == 0:
+        return {"pitching_average": 0}
+    return {
+        "pitching_average": result.total_strikeouts
+        / (result.total_hits + result.total_strikeouts)
+    }
+
+
+def get_player_fielding_stats(player_id):
+    """
+    Fetch fielding average of a player from games where they were the fielder.
+    """
+    sql = text(
+        """
+        SELECT 
+            COUNT(*) AS games_played, 
+            SUM(home_points) + SUM(visiting_points) AS total_runs, 
+            SUM(home_hits) + SUM(visiting_hits) AS total_hits, 
+            SUM(home_outs) + SUM(visiting_outs) AS total_outs
+        FROM games
+        WHERE home_fielder = :player_id OR visiting_fielder = :player_id
+        """
+    )
+    result = db.session.execute(sql, {"player_id": player_id}).fetchone()
+    if result.games_played == 0:
+        return {"fielding_average": 0}
+    return {
+        "fielding_average": result.total_hits / (result.total_hits + result.total_outs)
+    }
+
+
 def get_pitcher_by_team_id(team_id):
     """
     Fetch the pitcher of a given team by team ID.
@@ -293,3 +364,128 @@ def get_fielder_by_team_id(team_id):
     if not player_result:
         print(f"No player found with id {team_result.catcher}.")
     return player_result
+
+
+def create_match(challenger_id, challenged_id, results):
+    """
+    Create a new match between two teams.
+    """
+    home_hits = results["home_hits"]
+    visiting_hits = results["visiting_hits"]
+    home_strikeouts = results["home_strikeouts"]
+    visiting_strikeouts = results["visiting_strikeouts"]
+    home_outs = results["home_outs"]
+    visiting_outs = results["visiting_outs"]
+    home_points = results["home_points"]
+    visiting_points = results["visiting_points"]
+    mvp = results["mvp"]
+    winner = results["winner"]
+
+    # Get the players' IDs
+    visiting_batter = get_batter_by_team_id(challenger_id)[0]
+    visiting_pitcher = get_pitcher_by_team_id(challenger_id)[0]
+    visiting_fielder = get_fielder_by_team_id(challenger_id)[0]
+
+    home_batter = get_batter_by_team_id(challenged_id)[0]
+    home_pitcher = get_pitcher_by_team_id(challenged_id)[0]
+    home_fielder = get_fielder_by_team_id(challenged_id)[0]
+
+    date = datetime.now()
+
+    sql = text(  # Insert the match into the database
+        """
+        INSERT INTO games (
+            home_team, home_batter, home_pitcher, home_fielder,
+            visiting_team, visiting_batter, visiting_pitcher, visiting_fielder,
+            home_hits, visiting_hits,
+            home_strikeouts, visiting_strikeouts,
+            home_outs, visiting_outs,
+            home_points, visiting_points,
+            mvp, winner, date
+        ) VALUES (
+            :home_team, :home_batter, :home_pitcher, :home_fielder,
+            :visiting_team, :visiting_batter, :visiting_pitcher, :visiting_fielder,
+            :home_hits, :visiting_hits,
+            :home_strikeouts, :visiting_strikeouts,
+            :home_outs, :visiting_outs,
+            :home_points, :visiting_points,
+            :mvp, :winner, :date
+        )
+        """
+    )
+    db.session.execute(
+        sql,
+        {
+            "home_team": challenger_id,
+            "home_batter": home_batter,
+            "home_pitcher": home_pitcher,
+            "home_fielder": home_fielder,
+            "visiting_team": challenged_id,
+            "visiting_batter": visiting_batter,
+            "visiting_pitcher": visiting_pitcher,
+            "visiting_fielder": visiting_fielder,
+            "home_hits": home_hits,
+            "visiting_hits": visiting_hits,
+            "home_strikeouts": home_strikeouts,
+            "visiting_strikeouts": visiting_strikeouts,
+            "home_outs": home_outs,
+            "visiting_outs": visiting_outs,
+            "home_points": home_points,
+            "visiting_points": visiting_points,
+            "mvp": mvp,
+            "winner": winner,
+            "date": date,
+        },
+    )
+
+    db.session.commit()
+
+    # Update the teams' stats
+    if winner == challenger_id:
+        # Challenger won
+        sql = text(
+            """
+            UPDATE teams
+            SET wins = wins + 1
+            WHERE id = :team_id
+            """
+        )
+        db.session.execute(sql, {"team_id": challenger_id})
+        sql = text(
+            """
+            UPDATE teams
+            SET losses = losses + 1
+            WHERE id = :team_id
+            """
+        )
+        db.session.execute(sql, {"team_id": challenged_id})
+    elif winner == challenged_id:
+        # Challenged team won
+        sql = text(
+            """
+            UPDATE teams
+            SET wins = wins + 1
+            WHERE id = :team_id
+            """
+        )
+        db.session.execute(sql, {"team_id": challenged_id})
+        sql = text(
+            """
+            UPDATE teams
+            SET losses = losses + 1
+            WHERE id = :team_id
+            """
+        )
+        db.session.execute(sql, {"team_id": challenger_id})
+    else:
+        # Tie
+        sql = text(
+            """
+            UPDATE teams
+            SET games_tied = games_tied + 1
+            WHERE id = :team_id
+            """
+        )
+        db.session.execute(sql, {"team_id": challenger_id})
+        db.session.execute(sql, {"team_id": challenged_id})
+    db.session.commit()
